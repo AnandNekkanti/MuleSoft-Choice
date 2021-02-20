@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:request-config name="HTTP_Request_configuration3" doc:name="HTTP Request configuration" doc:id="1eca6cd0-78ec-4102-b1a0-0576a911b18f" >
+		<http:request-connection host="jsonplaceholder.typicode.com" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration4" doc:name="HTTP Request configuration" doc:id="9929ba6b-242c-4758-afee-60ebcddd1199" >
+		<http:request-connection host="jsonplaceholder.typicode.com" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration5" doc:name="HTTP Request configuration" doc:id="b810237c-1547-4dbd-a32f-13ec986bc3b3" >
+		<http:request-connection host="jsonplaceholder.typicode.com" />
+	</http:request-config>
+	<flow name="choice_projectFlow" doc:id="5160eb46-0e95-434d-bea4-3a171b0dcf35" >
+		<http:listener doc:name="Choise" doc:id="753e1e81-c6e1-4b95-aa35-47f92b5952d5" config-ref="HTTP_Listener_config" path="/json"/>
+		<logger level="INFO" doc:name="Print QueryParams Value" doc:id="dab1fdff-9026-4639-8e73-113176d3c39c" message="#[attributes.queryParams.value]"/>
+		<choice doc:name="Choice" doc:id="b74e4937-4b2e-4713-a85c-c6739d4eae7f" >
+			<when expression='#[attributes.queryParams.value=="photos"]'>
+				<http:request method="GET" doc:name="Photos" doc:id="4f7c3469-f42f-46e9-a706-e51dcc070e92" config-ref="HTTP_Request_configuration4" path="/photos"/>
+			</when>
+			<when expression='#[attributes.queryParams.value=="comments"]'>
+				<http:request method="GET" doc:name="Comments" doc:id="85f572f0-616e-446f-a4ec-f24a3e4e099c" config-ref="HTTP_Request_configuration3" path="/comments" />
+			</when>
+			<when expression='#[attributes.queryParams.value=="Todos"]'>
+				<http:request method="GET" doc:name="Todos" doc:id="8070b17e-0aec-4432-a7a0-49f08f5068f5" config-ref="HTTP_Request_configuration5" path="/todos"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="8c19f9f2-fd2d-4a4b-b893-c7acf7ddc7ac" message="Request Failed #[attributes.queryParams.value]"/>
+			</otherwise>
+		</choice>
+		<file:write doc:name="Write" doc:id="70ea9460-3073-483d-b593-feb30302f964" path="C:\Users\nekka\Desktop\choice.json"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1402079c-21ac-4db8-afbc-204104066671" message="File Created for #[attributes.queryParams.value]"/>
+	</flow>
+</mule>

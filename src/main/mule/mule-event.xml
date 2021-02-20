@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c4bc33a2-76d2-4d17-bea9-d4f896ade159" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="401c4086-5ba1-4fbd-a46a-2f5d13230688" >
+		<http:request-connection host="jsonplaceholder.typicode.com"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="57c47a70-1a16-4794-9e5c-d1de5b98a077" >
+		<http:request-connection host="jsonplaceholder.typicode.com" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration2" doc:name="HTTP Request configuration" doc:id="ab5d9f59-2397-4a36-9c82-c47b194935e8" >
+		<http:request-connection host="jsonplaceholder.typicode.com" />
+	</http:request-config>
+	<flow name="Flow-B" doc:id="4be88fd2-acab-4764-a3e6-96aeb7a9f79f" >
+		<logger level="INFO" doc:name="Logger" doc:id="0064df71-806f-4fbc-9205-9fa6e3423ec1" message="printing payload in Flow-B #[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e8d8e174-9cd9-4ea8-892d-98f2476a1939" message="#[vars.payload_recevied]"/>
+		<set-variable value="India" doc:name="x" doc:id="f087e03f-55d7-4b4b-a1c6-bb41af338f90" variableName="x"/>
+		<flow-ref doc:name="Sub-Flow-1" doc:id="57154838-33a8-4155-b92c-24ef2c8c0662" name="Flow-C" />
+	</flow>
+	<sub-flow name="Sub_Fow-1" doc:id="002a6831-b39d-45f3-bc8d-b4eb500387e0" >
+		<set-variable value="#[attributes.queryParams.Nbr]" doc:name="Set Variable" doc:id="0a0d4784-f95d-4b53-8c64-5dc34f3ba259" variableName="Nbr"/>
+		<logger level="INFO" doc:name="Logger" doc:id="967a28bc-21a7-4b69-b17b-41d7329964fd" message="#[vars.Nbr]"/>
+	</sub-flow>
+	<flow name="Flow-C" doc:id="2e03723c-beb0-47c5-91ca-98fd8cf18a44" >
+		<http:listener doc:name="Listener" doc:id="f11ac246-724f-4946-957b-17d56a1cb7d7" config-ref="HTTP_Listener_config" path="/http"/>
+		<set-variable value="#[payload.Apmi]" doc:name="Variable" doc:id="0d67c7a0-c57e-4116-8cb5-75b15576a301" variableName="Apmi"/>
+		<choice doc:name="Choice" doc:id="1ac1e35b-3fa2-49c5-b533-a068fba3bc51">
+			<when expression="#[vars.Apmi == '1']">
+				<http:request method="GET" doc:name="Request" doc:id="34be7a84-b215-4b3c-bf99-a01d248c14f8" config-ref="HTTP_Request_configuration" path="/users" />
+			</when>
+			<when expression="#[vars.Apmi == '2']">
+				<http:request method="GET" doc:name="Request" doc:id="66ecb694-a178-4c94-b3f3-5caa5e5646ad" config-ref="HTTP_Request_configuration1" path="/comments"/>
+			</when>
+			<when expression="#[vars.Apmi == '3']">
+				<http:request method="GET" doc:name="Request" doc:id="bcdc1bf7-37a4-4620-870a-be479e29e53f" config-ref="HTTP_Request_configuration2" path="/todos"/>
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="b8432f38-b4d4-44fd-93c7-f1a82eb532a2" message="Wrong Apmi Id found #[payload] &amp; #[vars.Apmi]"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="f2bc9c76-fb65-4d7b-b14d-d51863030506" message="#[payload]"/>
+	</flow>
+	<flow name="Flow-A" doc:id="8ff3258f-9944-4d55-a491-0c0902dbb7f7" >
+		<http:listener doc:name="Listener" doc:id="b1102af9-a073-42e7-a189-8a04818ecfc8" config-ref="HTTP_Listener_config" path="/vardemo"/>
+		<set-variable value="#[payload]" doc:name="payload-recevied" doc:id="22cfb792-8e51-4148-94d5-4e40c3b8ea8c" variableName="payload_recevied"/>
+		<logger level="INFO" doc:name="Logger" doc:id="80b7e872-8bfa-443f-913a-9ed712e93e0c" message="Varable value in flow-A #[vars.payload_recevied]"/>
+	</flow>
+</mule>
